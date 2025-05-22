@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:gugugu/core/widgets/app_button.dart';
+import 'package:gugugu/core/widgets/app_card.dart';
+import 'package:gugugu/presentation/features/meal/providers/meal_detail_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:gugugu/core/theme/app_colors.dart';
 import 'package:gugugu/core/theme/app_text_styles.dart';
-import 'package:gugugu/core/widgets/app_card.dart';
-import 'package:gugugu/core/widgets/app_button.dart';
+import 'package:gugugu/domain/entities/meal.dart';
+import 'package:gugugu/domain/entities/meal_review.dart';
+import 'package:gugugu/presentation/features/meal/providers/meal_provider.dart';
 
 class MealDetailScreen extends StatefulWidget {
-  final Map<String, dynamic> meal;
+  final Meal meal;
 
   const MealDetailScreen({
     super.key,
@@ -18,8 +23,14 @@ class MealDetailScreen extends StatefulWidget {
 }
 
 class _MealDetailScreenState extends State<MealDetailScreen> {
-  final TextEditingController _commentController = TextEditingController();
+  final _commentController = TextEditingController();
   double _userRating = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() => context.read<MealDetailProvider>().loadComments(widget.meal));
+  }
 
   @override
   void dispose() {
@@ -27,15 +38,73 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
     super.dispose();
   }
 
+  void _submitReview() {
+    if (_userRating == 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('평점을 선택해주세요')),
+      );
+      return;
+    }
+
+    context.read<MealDetailProvider>().submitRating(
+      widget.meal,
+      _userRating,
+      _commentController.text,
+    );
+    _commentController.clear();
+  }
+
+  Widget _buildCommentItem(MealReview review) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          RatingBar.builder(
+            initialRating: review.rating,
+            minRating: 1,
+            direction: Axis.horizontal,
+            allowHalfRating: true,
+            itemCount: 5,
+            itemSize: 16,
+            ignoreGestures: true,
+            itemBuilder: (context, _) => const Icon(
+              Icons.star,
+              color: AppColors.warning,
+            ),
+            onRatingUpdate: (rating) {},
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  review.comment,
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  review.createdAt.toString(),
+                  style: AppTextStyles.bodySmall.copyWith(
+                    color: AppColors.textHint,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('식단 상세', style: AppTextStyles.titleMedium),
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        foregroundColor: Theme.of(context).colorScheme.onSurface,
-        surfaceTintColor: Colors.transparent,
-        elevation: 0,
+        title: Text('${widget.meal.mealType} 급식'),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -47,14 +116,14 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    widget.meal['date']?.toString() ?? '날짜 없음',
+                    '${widget.meal.mealDate.substring(0, 4)}년 ${widget.meal.mealDate.substring(4, 6)}월 ${widget.meal.mealDate.substring(6, 8)}일',
                     style: AppTextStyles.titleSmall.copyWith(
                       color: AppColors.textPrimary,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    widget.meal['menu']?.toString() ?? '메뉴 없음',
+                    widget.meal.menu,
                     style: AppTextStyles.bodyLarge.copyWith(
                       color: AppColors.textSecondary,
                     ),
@@ -69,7 +138,7 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
                         ),
                       ),
                       RatingBar.builder(
-                        initialRating: widget.meal['rating']?.toDouble() ?? 0,
+                        initialRating: context.watch<MealDetailProvider>().rating,
                         minRating: 1,
                         direction: Axis.horizontal,
                         allowHalfRating: true,
@@ -84,7 +153,7 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        '${widget.meal['rating']?.toStringAsFixed(1) ?? '0.0'}',
+                        context.watch<MealDetailProvider>().rating.toStringAsFixed(1),
                         style: AppTextStyles.bodyMedium.copyWith(
                           color: AppColors.textSecondary,
                         ),
@@ -95,27 +164,30 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            if (widget.meal['comments'] != null)
-              AppCard(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '코멘트',
-                      style: AppTextStyles.labelLarge.copyWith(
-                        color: AppColors.textPrimary,
+            Consumer<MealDetailProvider>(
+              builder: (context, provider, child) {
+                final comments = provider.comments;
+                if (comments.isEmpty) {
+                  return const SizedBox.shrink();
+                }
+
+                return AppCard(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '댓글',
+                        style: AppTextStyles.labelLarge.copyWith(
+                          color: AppColors.textPrimary,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      widget.meal['comments'].toString(),
-                      style: AppTextStyles.bodyMedium.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+                      const SizedBox(height: 16),
+                      ...comments.map(_buildCommentItem),
+                    ],
+                  ),
+                );
+              },
+            ),
             const SizedBox(height: 16),
             AppCard(
               child: Column(
@@ -163,10 +235,7 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
                   AppButton(
                     text: '평가 등록',
                     isFullWidth: true,
-                    onPressed: () {
-                      // TODO: 평가 등록 기능 구현
-                      Navigator.pop(context);
-                    },
+                    onPressed: _submitReview,
                   ),
                 ],
               ),
