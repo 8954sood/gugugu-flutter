@@ -3,10 +3,12 @@ import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'package:gugugu/presentation/features/restaurant/screens/location_picker_screen.dart';
 
 class RestaurantAddDialog extends StatefulWidget {
-  final Function(String name, String address, double lat, double lng, List<String> menu) onSubmit;
+  final LatLng userLocation;
+  final Function(String name, String description, String address, double lat, double lng) onSubmit;
 
   const RestaurantAddDialog({
     super.key,
+    required this.userLocation,
     required this.onSubmit,
   });
 
@@ -18,46 +20,32 @@ class _RestaurantAddDialogState extends State<RestaurantAddDialog> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _addressController = TextEditingController();
-  final _menuController = TextEditingController();
-  final List<String> _menuItems = [];
+  final _descriptionController = TextEditingController();
   LatLng? _selectedLocation;
 
   @override
   void dispose() {
     _nameController.dispose();
     _addressController.dispose();
-    _menuController.dispose();
+    _descriptionController.dispose();
     super.dispose();
   }
 
-  void _addMenuItem() {
-    if (_menuController.text.isNotEmpty) {
-      setState(() {
-        _menuItems.add(_menuController.text);
-        _menuController.clear();
-      });
-    }
-  }
-
-  void _removeMenuItem(int index) {
-    setState(() {
-      _menuItems.removeAt(index);
-    });
-  }
 
   Future<void> _pickLocation() async {
-    final result = await Navigator.push<LatLng>(
+    final result = await Navigator.push<(LatLng, String)>(
       context,
       MaterialPageRoute(
         builder: (context) => LocationPickerScreen(
-          initialPosition: _selectedLocation ?? LatLng(37.5665, 126.9780),
+          initialPosition: widget.userLocation,
         ),
       ),
     );
 
     if (result != null) {
       setState(() {
-        _selectedLocation = result;
+        _selectedLocation = result.$1;
+        _addressController.text = result.$2;
       });
     }
   }
@@ -106,41 +94,18 @@ class _RestaurantAddDialogState extends State<RestaurantAddDialog> {
                     : '위도: ${_selectedLocation!.latitude.toStringAsFixed(6)}\n경도: ${_selectedLocation!.longitude.toStringAsFixed(6)}'),
               ),
               const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextFormField(
-                      controller: _menuController,
-                      decoration: const InputDecoration(
-                        labelText: '메뉴',
-                      ),
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.add),
-                    onPressed: _addMenuItem,
-                  ),
-                ],
-              ),
-              if (_menuItems.isNotEmpty) ...[
-                const SizedBox(height: 8),
-                const Text(
-                  '추가된 메뉴',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                  ),
+              TextFormField(
+                controller: _descriptionController,
+                decoration: const InputDecoration(
+                  labelText: '설명',
                 ),
-                const SizedBox(height: 8),
-                ..._menuItems.asMap().entries.map((entry) {
-                  return ListTile(
-                    title: Text(entry.value),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.remove_circle_outline),
-                      onPressed: () => _removeMenuItem(entry.key),
-                    ),
-                  );
-                }).toList(),
-              ],
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return '맛집에 대한 설명을 입력해주세요';
+                  }
+                  return null;
+                },
+              ),
             ],
           ),
         ),
@@ -157,10 +122,10 @@ class _RestaurantAddDialogState extends State<RestaurantAddDialog> {
                   if (_formKey.currentState!.validate()) {
                     widget.onSubmit(
                       _nameController.text,
+                      _descriptionController.text,
                       _addressController.text,
                       _selectedLocation!.latitude,
                       _selectedLocation!.longitude,
-                      List.from(_menuItems),
                     );
                     Navigator.pop(context);
                   }

@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:gugugu/data/datasources/restaurant_api.dart';
 import 'package:gugugu/data/repositories/meal_repository_impl.dart';
+import 'package:gugugu/data/repositories/restaurant_repository_impl.dart';
 import 'package:gugugu/domain/repositories/meal_repository.dart';
+import 'package:gugugu/domain/repositories/restaurant_repository.dart';
 import 'package:gugugu/presentation/features/meal/providers/meal_detail_provider.dart';
+import 'package:gugugu/presentation/features/restaurant/providers/restaurant_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:gugugu/presentation/features/meal/providers/meal_provider.dart';
 import 'package:gugugu/data/datasources/meal_api.dart';
@@ -24,15 +28,24 @@ class MyApp extends StatelessWidget {
         Provider<MealApi>(
           create: (_) => MealApi(),
         ),
+        Provider<RestaurantApi>(
+          create: (_) => RestaurantApi(),
+        ),
         Provider<MealRepository>(
           create: (context) => MealRepositoryImpl(context.read<MealApi>()),
+        ),
+        Provider<RestaurantRepository>(
+            create: (context) => RestaurantRepositoryImpl(context.read<RestaurantApi>())
         ),
         ChangeNotifierProvider<MealProvider>(
           create: (context) => MealProvider(context.read<MealRepository>()),
         ),
         ChangeNotifierProvider<MealDetailProvider>(
           create: (context) => MealDetailProvider(context.read<MealRepository>()),
-        )
+        ),
+        ChangeNotifierProvider<RestaurantProvider>(
+          create: (context) => RestaurantProvider(context.read<RestaurantRepository>())
+        ),
       ],
       child: MaterialApp(
         title: '밥먹자구구구',
@@ -40,7 +53,7 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
         ),
-        home: const MealScreen(),
+        home: const RestaurantMapScreen(),
       ),
     );
   }

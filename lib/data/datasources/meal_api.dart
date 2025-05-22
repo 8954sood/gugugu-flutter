@@ -1,3 +1,4 @@
+import 'package:gugugu/core/network/dio_client.dart';
 import 'package:gugugu/domain/entities/meal.dart';
 import 'package:gugugu/domain/entities/meal_review.dart';
 import 'package:dio/dio.dart';
@@ -6,19 +7,7 @@ class MealApi {
   final Dio _dio;
   final String baseUrl = 'http://10.80.162.236:8080';
 
-  MealApi() : _dio = Dio() {
-    _dio.options.baseUrl = 'http://10.80.162.236:8080';
-    _dio.options.connectTimeout = const Duration(seconds: 10);
-    _dio.options.receiveTimeout = const Duration(seconds: 10);
-    _dio.interceptors.add(LogInterceptor(
-    request: true,
-    requestBody: true,
-    responseHeader: false,
-    responseBody: true,
-    error: true,
-    logPrint: print, // 로그 출력 방식 (기본: print)
-    ));
-  }
+  MealApi() : _dio = DioClient().dio;
 
   Future<List<Meal>> getMeals({
     required String startDate,

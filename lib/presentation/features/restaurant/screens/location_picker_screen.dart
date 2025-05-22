@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:gugugu/presentation/utiles/utiles.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'package:gugugu/core/theme/app_colors.dart';
 import 'package:gugugu/core/theme/app_text_styles.dart';
@@ -20,12 +22,23 @@ class LocationPickerScreen extends StatefulWidget {
 class _LocationPickerScreenState extends State<LocationPickerScreen> {
   KakaoMapController? mapController;
   LatLng? selectedLocation;
+  String? selectedAddress;
   final Set<Marker> markers = {};
 
   @override
   void initState() {
     super.initState();
     selectedLocation = widget.initialPosition ?? LatLng(37.5665, 126.9780);
+    Future.microtask(() async {
+      selectedAddress = await getAddressFromLatLng(selectedLocation!.latitude, selectedLocation!.longitude);
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    mapController?.dispose();
   }
 
   void _updateMarker() async {
@@ -40,9 +53,26 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
       height: 30,
     );
     markers.clear();
+    controller.clear();
     markers.add(marker);
+
+    if (!mounted) return;
     setState(() {});
   }
+
+  Future<String?> getAddressFromLatLng(double latitude, double longitude) async {
+    try {
+      List<Placemark> placemarks = await placemarkFromCoordinates(latitude, longitude);
+      if (placemarks.isNotEmpty) {
+        final place = placemarks.first;
+        return "${place.street}, ${place.locality}, ${place.administrativeArea}, ${place.country}";
+      }
+    } catch (e) {
+      print("주소 변환 오류: $e");
+    }
+    return null;
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -57,17 +87,23 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
       body: Stack(
         children: [
           KakaoMap(
+            key: const ValueKey('kakao_picker_map'),
             onMapCreated: (controller) {
+              if (!mounted) return;
+              print("created");
               setState(() {
                 mapController = controller;
               });
             },
             onMapTap: (latLng) {
+              if (!mounted) return;
               setState(() {
                 selectedLocation = latLng;
               });
 
-              WidgetsBinding.instance.addPostFrameCallback((_) {
+              WidgetsBinding.instance.addPostFrameCallback((_) async {
+                selectedAddress = await getAddressFromLatLng(selectedLocation!.latitude, selectedLocation!.longitude);
+                setState(() {});
                 _updateMarker();
               });
             },
@@ -91,6 +127,12 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                   ),
                   if (selectedLocation != null) ...[
                     const SizedBox(height: 8),
+                    Text(
+                      '주소: $selectedAddress',
+                      style: AppTextStyles.bodyMedium.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
                     Text(
                       '위도: ${selectedLocation!.latitude.toStringAsFixed(6)}',
                       style: AppTextStyles.bodyMedium.copyWith(
@@ -128,8 +170,10 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                   text: '선택',
                   onPressed: selectedLocation == null
                       ? null
-                      : () => Navigator.pop(context, selectedLocation),
-                ),
+                      : () {
+                    Navigator.pop(context, (selectedLocation, selectedAddress));
+                  } ,
+                )
               ),
             ],
           ),

@@ -17,18 +17,18 @@ class ReviewDialog extends StatefulWidget {
 class _ReviewDialogState extends State<ReviewDialog> {
   final TextEditingController _contentController = TextEditingController();
   double _rating = 0;
-  String? _imagePath;
+  // String? _imagePath;
 
-  Future<void> _pickImage() async {
-    final ImagePicker picker = ImagePicker();
-    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-    
-    if (image != null) {
-      setState(() {
-        _imagePath = image.path;
-      });
-    }
-  }
+  // Future<void> _pickImage() async {
+  //   final ImagePicker picker = ImagePicker();
+  //   final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+  //
+  //   if (image != null) {
+  //     setState(() {
+  //       _imagePath = image.path;
+  //     });
+  //   }
+  // }
 
   @override
   void dispose() {
@@ -78,27 +78,27 @@ class _ReviewDialogState extends State<ReviewDialog> {
                 border: OutlineInputBorder(),
               ),
             ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                ElevatedButton.icon(
-                  onPressed: _pickImage,
-                  icon: const Icon(Icons.image),
-                  label: const Text('이미지 추가'),
-                ),
-                if (_imagePath != null) ...[
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      '이미지 선택됨',
-                      style: TextStyle(
-                        color: Theme.of(context).primaryColor,
-                      ),
-                    ),
-                  ),
-                ],
-              ],
-            ),
+            // const SizedBox(height: 16),
+            // Row(
+            //   children: [
+            //     ElevatedButton.icon(
+            //       onPressed: _pickImage,
+            //       icon: const Icon(Icons.image),
+            //       label: const Text('이미지 추가'),
+            //     ),
+            //     if (_imagePath != null) ...[
+            //       const SizedBox(width: 8),
+            //       Expanded(
+            //         child: Text(
+            //           '이미지 선택됨',
+            //           style: TextStyle(
+            //             color: Theme.of(context).primaryColor,
+            //           ),
+            //         ),
+            //       ),
+            //     ],
+            //   ],
+            // ),
             const SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -114,7 +114,7 @@ class _ReviewDialogState extends State<ReviewDialog> {
                       widget.onSubmit(
                         _contentController.text,
                         _rating,
-                        _imagePath,
+                        null,
                       );
                       Navigator.pop(context);
                     }
