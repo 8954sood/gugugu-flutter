@@ -1,5 +1,9 @@
+import 'dart:math';
+
 import 'package:dio/dio.dart';
 import 'package:gugugu/core/network/dio_client.dart';
+import 'package:gugugu/domain/entities/comment.dart';
+import 'package:gugugu/domain/entities/menu.dart';
 import 'package:gugugu/domain/entities/restaurant.dart';
 
 class RestaurantApi {
@@ -37,23 +41,43 @@ class RestaurantApi {
   }
 
   Future<List<Restaurant>> getHotPlaces({int? limit}) async {
-    try {
-      final response = await _dio.get(
-        '/api/restaurants/hot-places',
-        queryParameters: {
-          if (limit != null) 'limit': limit,
-        },
-      );
-
-      if (response.statusCode == 200) {
-        final List<dynamic> data = response.data;
-        return data.map((json) => Restaurant.fromJson(json)).toList();
-      } else {
-        throw Exception('Failed to load hot places');
-      }
-    } on DioException catch (e) {
-      throw Exception('Failed to load hot places: ${e.message}');
-    }
+    // try {
+    //   final response = await _dio.get(
+    //     '/api/restaurants/hot-places',
+    //     queryParameters: {
+    //       if (limit != null) 'limit': limit,
+    //     },
+    //   );
+    //
+    //   if (response.statusCode == 200) {
+    //     final List<dynamic> data = response.data;
+    //     return data.map((json) => Restaurant.fromJson(json)).toList();
+    //   } else {
+    //     throw Exception('Failed to load hot places');
+    //   }
+    // } on DioException catch (e) {
+    //   throw Exception('Failed to load hot places: ${e.message}');
+    // }
+    return [
+      Restaurant(
+          id: 1,
+          name: "dgsw",
+          address: "address",
+          latitude: 35.663286,
+          longitude: 128.41362558244387,
+          description: "description",
+          imageUrl: "https://picsum.photos/200",
+          averageRating: 3,
+          reviewCount: 1,
+          menu: [
+            Menu(name: "비빔밥", price: 3000, createdAt: DateTime.now(), updatedAt: DateTime.now()),
+          ],
+          comment: [
+            Comment(id: Random.secure().nextInt(3000), rating: 3, content: "무난무난한 식당", createdAt: DateTime.now(), updatedAt: DateTime.now()),
+          ],
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now()
+      )];
   }
 
   Future<Restaurant> createRestaurant(Restaurant restaurant) async {

@@ -4,6 +4,7 @@ import 'package:gugugu/data/repositories/meal_repository_impl.dart';
 import 'package:gugugu/data/repositories/restaurant_repository_impl.dart';
 import 'package:gugugu/domain/repositories/meal_repository.dart';
 import 'package:gugugu/domain/repositories/restaurant_repository.dart';
+import 'package:gugugu/presentation/features/hot_place/providers/hot_place_provider.dart';
 import 'package:gugugu/presentation/features/meal/providers/meal_detail_provider.dart';
 import 'package:gugugu/presentation/features/restaurant/providers/restaurant_provider.dart';
 import 'package:provider/provider.dart';
@@ -45,6 +46,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider<RestaurantProvider>(
           create: (context) => RestaurantProvider(context.read<RestaurantRepository>())
+        ),
+        ChangeNotifierProvider<HotPlaceProvider>(
+            create: (context) => HotPlaceProvider(context.read<RestaurantRepository>())
         ),
       ],
       child: MaterialApp(

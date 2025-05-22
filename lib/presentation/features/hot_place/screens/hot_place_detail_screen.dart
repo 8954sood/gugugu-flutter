@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:gugugu/core/theme/app_colors.dart';
 import 'package:gugugu/core/theme/app_text_styles.dart';
 import 'package:gugugu/core/widgets/app_card.dart';
 import 'package:gugugu/core/widgets/app_button.dart';
+import 'package:gugugu/domain/entities/restaurant.dart';
+import 'package:gugugu/presentation/features/hot_place/providers/hot_place_provider.dart';
+import 'package:provider/provider.dart';
 
 class HotPlaceDetailScreen extends StatefulWidget {
-  final Map<String, dynamic> place;
+  final Restaurant place;
 
   const HotPlaceDetailScreen({
     super.key,
@@ -18,7 +22,14 @@ class HotPlaceDetailScreen extends StatefulWidget {
 
 class _HotPlaceDetailScreenState extends State<HotPlaceDetailScreen> {
   final TextEditingController _commentController = TextEditingController();
+  late Restaurant _place;
   double _userRating = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _place = widget.place;
+  }
 
   @override
   void dispose() {
@@ -30,7 +41,7 @@ class _HotPlaceDetailScreenState extends State<HotPlaceDetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.place['name'], style: AppTextStyles.titleMedium),
+        title: Text(_place.name, style: AppTextStyles.titleMedium),
         backgroundColor: AppColors.surface,
         foregroundColor: AppColors.textPrimary,
         surfaceTintColor: Colors.transparent,
@@ -44,7 +55,7 @@ class _HotPlaceDetailScreenState extends State<HotPlaceDetailScreen> {
             ClipRRect(
               borderRadius: BorderRadius.circular(8),
               child: Image.network(
-                widget.place['image'],
+                _place.imageUrl ?? "",
                 width: double.infinity,
                 height: 200,
                 fit: BoxFit.cover,
@@ -63,7 +74,7 @@ class _HotPlaceDetailScreenState extends State<HotPlaceDetailScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    widget.place['address'],
+                    _place.address,
                     style: AppTextStyles.bodyLarge.copyWith(
                       color: AppColors.textSecondary,
                     ),
@@ -76,13 +87,18 @@ class _HotPlaceDetailScreenState extends State<HotPlaceDetailScreen> {
                     ),
                   ),
                   const SizedBox(height: 8),
+                  if (_place.menu.isEmpty)
+                    const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [Text("등록된 메뉴가 없습니다.")],
+                    ),
                   Wrap(
                     spacing: 8,
                     children: [
-                      for (final menu in widget.place['menu'])
+                      for (final menu in _place.menu)
                         Chip(
                           label: Text(
-                            menu,
+                            "${menu.name} ${menu.price}원",
                             style: AppTextStyles.bodySmall.copyWith(
                               color: AppColors.textPrimary,
                             ),
@@ -106,7 +122,12 @@ class _HotPlaceDetailScreenState extends State<HotPlaceDetailScreen> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  for (final comment in widget.place['comments'])
+                  if (_place.comment.isEmpty)
+                    const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [Text("리뷰가 없습니다.")],
+                    ),
+                  for (final comment in _place.comment)
                     Padding(
                       padding: const EdgeInsets.only(bottom: 16),
                       child: Column(
@@ -115,7 +136,7 @@ class _HotPlaceDetailScreenState extends State<HotPlaceDetailScreen> {
                           Row(
                             children: [
                               Text(
-                                comment['user'],
+                                "의문의 대소고인${comment.id}",
                                 style: AppTextStyles.bodyMedium.copyWith(
                                   color: AppColors.textPrimary,
                                   fontWeight: FontWeight.bold,
@@ -129,7 +150,7 @@ class _HotPlaceDetailScreenState extends State<HotPlaceDetailScreen> {
                               ),
                               const SizedBox(width: 4),
                               Text(
-                                comment['rating'].toString(),
+                                comment.rating.toStringAsFixed(2),
                                 style: AppTextStyles.bodySmall.copyWith(
                                   color: AppColors.textSecondary,
                                 ),
@@ -138,7 +159,7 @@ class _HotPlaceDetailScreenState extends State<HotPlaceDetailScreen> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            comment['content'],
+                            comment.content,
                             style: AppTextStyles.bodyMedium.copyWith(
                               color: AppColors.textSecondary,
                             ),
@@ -153,6 +174,24 @@ class _HotPlaceDetailScreenState extends State<HotPlaceDetailScreen> {
                     style: AppTextStyles.labelLarge.copyWith(
                       color: AppColors.textPrimary,
                     ),
+                  ),
+                  const SizedBox(height: 8),
+                  RatingBar.builder(
+                    initialRating: _userRating,
+                    minRating: 1,
+                    direction: Axis.horizontal,
+                    allowHalfRating: true,
+                    itemCount: 5,
+                    itemSize: 30,
+                    itemBuilder: (context, _) => const Icon(
+                      Icons.star,
+                      color: Colors.amber,
+                    ),
+                    onRatingUpdate: (rating) {
+                      setState(() {
+                        _userRating = rating;
+                      });
+                    },
                   ),
                   const SizedBox(height: 16),
                   TextField(
@@ -172,14 +211,21 @@ class _HotPlaceDetailScreenState extends State<HotPlaceDetailScreen> {
                   AppButton(
                     text: '리뷰 등록',
                     isFullWidth: true,
-                    onPressed: () {
-                      // TODO: 리뷰 등록 기능 구현
-                      Navigator.pop(context);
+                    onPressed: () async {
+                      final newComment = await context.read<HotPlaceProvider>().createComment(restaurantId: _place.id, rating: _userRating, content: _commentController.text);
+                      _commentController.clear();
+                      _userRating = 0;
+                      setState(() {
+                        _place = _place.copyWith(
+                          comment: _place.comment..add(newComment)
+                        );
+                      });
                     },
                   ),
                 ],
               ),
             ),
+            const SizedBox(height: 80),
           ],
         ),
       ),
