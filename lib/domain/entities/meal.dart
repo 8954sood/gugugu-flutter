@@ -36,4 +36,23 @@ class Meal {
       'averageRating': averageRating,
     };
   }
+
+  Meal copyWith({
+    String? mealDate,
+    String? mealType,
+    String? menu,
+    String? calorie,
+    String? mealInfo,
+    double? averageRating,
+  }) {
+    return Meal(
+      mealDate: mealDate ?? this.mealDate,
+      mealType: mealType ?? this.mealType,
+      menu: menu ?? this.menu,
+      calorie: calorie ?? this.calorie,
+      mealInfo: mealInfo ?? this.mealInfo,
+      averageRating: averageRating ?? this.averageRating,
+    );
+  }
+
 } 

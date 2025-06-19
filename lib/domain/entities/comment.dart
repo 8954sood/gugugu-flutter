@@ -21,7 +21,7 @@ class Comment {
     return {
       'id': id,
       'rating': rating,
-      'content': content,
+      'comment': content,
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
     };

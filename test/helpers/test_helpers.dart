@@ -30,6 +30,46 @@ final mockMealReview = MealReview(
   updatedAt: DateTime.parse('2024-01-01T00:00:00Z'),
 );
 
+final mockMenu = Menu(
+  name: 'Test Menu',
+  price: 10000,
+  createdAt: DateTime.parse('2024-01-01T00:00:00Z'),
+  updatedAt: DateTime.parse('2024-01-01T00:00:00Z'),
+);
+
+final mockComment = Comment(
+  id: 1,
+  content: 'Test Comment',
+  rating: 4.5,
+  createdAt: DateTime.parse('2024-01-01T00:00:00Z'),
+  updatedAt: DateTime.parse('2024-01-01T00:00:00Z'),
+);
+
+final mockRestaurant = Restaurant(
+  id: 1,
+  name: 'Test Restaurant',
+  address: 'Test Address',
+  latitude: 37.5665,
+  longitude: 126.9780,
+  description: 'Test Description',
+  averageRating: 4.5,
+  reviewCount: 10,
+  menu: [mockMenu],
+  comment: [mockComment],
+  createdAt: DateTime.parse('2024-01-01T00:00:00Z'),
+  updatedAt: DateTime.parse('2024-01-01T00:00:00Z'),
+);
+
+final mockReview = Review(
+  id: 1,
+  menu: 'Test Menu',
+  mealDate: '2024-01-01',
+  rating: 4.5,
+  comment: 'Test Comment',
+  createdAt: DateTime.parse('2024-01-01T00:00:00Z'),
+  updatedAt: DateTime.parse('2024-01-01T00:00:00Z'),
+);
+
 Response<T> successResponse<T>(T data, {int statusCode = 200}) {
   return Response(
     data: data,
