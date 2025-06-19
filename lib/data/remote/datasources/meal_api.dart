@@ -7,7 +7,7 @@ class MealApi {
   final Dio _dio;
   final String baseUrl = 'http://10.80.162.236:8080';
 
-  MealApi() : _dio = DioClient().dio;
+  MealApi([Dio? dio]) : _dio = dio ?? DioClient().dio;
 
   Future<List<Meal>> getMeals({
     required String startDate,
