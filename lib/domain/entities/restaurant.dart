@@ -43,10 +43,10 @@ class Restaurant {
       imageUrl: json['imageUrl'] as String?,
       averageRating: (json['averageRating'] as num).toDouble(),
       reviewCount: json['reviewCount'] as int,
-      menu: (json['menu'] as List<dynamic>)
+      menu: (json['menus'] as List<dynamic>)
           .map((e) => Menu.fromJson(e as Map<String, dynamic>))
           .toList(),
-      comment: (json['comment'] as List<dynamic>)
+      comment: (json['reviews'] as List<dynamic>)
           .map((e) => Comment.fromJson(e as Map<String, dynamic>))
           .toList(),
       createdAt: DateTime.parse(json['createdAt'] as String),
@@ -65,8 +65,8 @@ class Restaurant {
       'imageUrl': imageUrl,
       'averageRating': averageRating,
       'reviewCount': reviewCount,
-      'menu': menu.map((e) => e.toJson()).toList(),
-      'comment': comment.map((e) => e.toJson()).toList(),
+      'menus': menu.map((e) => e.toJson()).toList(),
+      'reviews': comment.map((e) => e.toJson()).toList(),
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
     };

@@ -11,7 +11,7 @@ class Comment {
     return Comment(
       id: json['id'] as int,
       rating: (json['rating'] as num).toDouble(),
-      content: json['content'] as String,
+      content: json['comment'] as String,
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: DateTime.parse(json['updatedAt'] as String),
     );

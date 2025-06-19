@@ -136,7 +136,7 @@ class _HotPlaceDetailScreenState extends State<HotPlaceDetailScreen> {
                           Row(
                             children: [
                               Text(
-                                "의문의 대소고인${comment.id}",
+                                "대소고인${comment.id}",
                                 style: AppTextStyles.bodyMedium.copyWith(
                                   color: AppColors.textPrimary,
                                   fontWeight: FontWeight.bold,

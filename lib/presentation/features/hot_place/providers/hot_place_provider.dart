@@ -34,8 +34,7 @@ class HotPlaceProvider with ChangeNotifier {
 
   Future<Comment> createComment({required int restaurantId, required double rating, required String content, }) async {
     try {
-      await _restaurantRepository.createComment(restaurantId: restaurantId, rating: rating, content: content);
-      final newComment = Comment(id: Random.secure().nextInt(3000), rating: rating, content: content, createdAt: DateTime.now(), updatedAt: DateTime.now());
+      final newComment = await _restaurantRepository.createComment(restaurantId: restaurantId, rating: rating, content: content);
       _restaurants.map((item) {
         if (item.id != restaurantId) return item;
 

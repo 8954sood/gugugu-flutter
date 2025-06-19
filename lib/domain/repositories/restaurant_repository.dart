@@ -1,3 +1,5 @@
+import 'package:gugugu/domain/entities/comment.dart';
+
 import '../entities/restaurant.dart';
 
 abstract class RestaurantRepository {
@@ -18,5 +20,5 @@ abstract class RestaurantRepository {
 
   Future<void> createMenu({required int restaurantId, required String name, required String description, required int price});
 
-  Future<void> createComment({required int restaurantId, required double rating, required String content,});
+  Future<Comment> createComment({required int restaurantId, required double rating, required String content,});
 } 

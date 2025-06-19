@@ -7,6 +7,8 @@ class MealCacheDatasource {
   static const _tableName = 'meal_cache';
   Database? _db;
 
+  MealCacheDatasource([Database? db]): _db = db;
+
   Future<void> init() async {
     if (_db != null) return;
     final dbPath = await getDatabasesPath();
