@@ -60,6 +60,7 @@ class MealApi {
   Future<MealReview> createMealReview({
     required String mealDate,
     required String mealType,
+    required String menu,
     required double rating,
     required String content,
   }) async {
@@ -72,11 +73,12 @@ class MealApi {
         },
         data: {
           'rating': rating,
-          'content': content,
+          'comment': content,
+          'menu': menu,
         },
       );
 
-      if (response.statusCode == 201) {
+      if (response.statusCode == 200) {
         return MealReview.fromJson(response.data as Map<String, dynamic>);
       } else {
         throw Exception('Failed to create meal review');

@@ -38,6 +38,7 @@ class MealDetailProvider with ChangeNotifier {
       final res = await _mealRepository.createMealReview(
         mealDate: meal.mealDate,
         mealType: meal.mealType,
+        menu: meal.menu,
         rating: rating,
         content: content,
       );

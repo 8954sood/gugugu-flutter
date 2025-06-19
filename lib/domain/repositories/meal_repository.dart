@@ -10,6 +10,7 @@ abstract class MealRepository {
   Future<MealReview> createMealReview({
     required String mealDate,
     required String mealType,
+    required String menu,
     required double rating,
     required String content,
   });

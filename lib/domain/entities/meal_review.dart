@@ -27,4 +27,14 @@ class MealReview {
       updatedAt: DateTime.parse(json['updatedAt'] as String),
     );
   }
-} 
+
+  Map<String, dynamic> toJson() =>
+    {
+      "id": id,
+      "menu": menu,
+      "rating": rating,
+      "comment": comment,
+      "createdAt": createdAt.toIso8601String(),
+      "updatedAt": updatedAt.toIso8601String(),
+    };
+}

@@ -10,7 +10,7 @@ class DioClient {
 
   DioClient._internal() {
     dio = Dio(BaseOptions(
-      baseUrl: 'http://10.80.162.236:8080',
+      baseUrl: 'http://localhost:8080',
       connectTimeout: const Duration(seconds: 5),
       receiveTimeout: const Duration(seconds: 3),
     )).. interceptors.add(
@@ -20,7 +20,7 @@ class DioClient {
         responseHeader: false,
         responseBody: true,
         error: true,
-        logPrint: print, // 로그 출력 방식 (기본: print)
+        logPrint: print,
         ),
     );
   }

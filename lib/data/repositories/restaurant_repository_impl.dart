@@ -1,4 +1,4 @@
-import 'package:gugugu/data/datasources/restaurant_api.dart';
+import 'package:gugugu/data/remote/datasources/restaurant_api.dart';
 import 'package:gugugu/domain/entities/restaurant.dart';
 import 'package:gugugu/domain/repositories/restaurant_repository.dart';
 

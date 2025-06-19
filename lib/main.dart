@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:gugugu/data/datasources/restaurant_api.dart';
+import 'package:gugugu/data/local/datasources/meal_cache_datasource.dart';
+import 'package:gugugu/data/remote/datasources/restaurant_api.dart';
 import 'package:gugugu/data/repositories/meal_repository_impl.dart';
 import 'package:gugugu/data/repositories/restaurant_repository_impl.dart';
 import 'package:gugugu/domain/repositories/meal_repository.dart';
@@ -9,7 +10,7 @@ import 'package:gugugu/presentation/features/meal/providers/meal_detail_provider
 import 'package:gugugu/presentation/features/restaurant/providers/restaurant_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:gugugu/presentation/features/meal/providers/meal_provider.dart';
-import 'package:gugugu/data/datasources/meal_api.dart';
+import 'package:gugugu/data/remote/datasources/meal_api.dart';
 import 'package:gugugu/presentation/features/meal/screens/meal_screen.dart';
 import 'package:gugugu/presentation/features/restaurant/screens/restaurant_map_screen.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
@@ -32,8 +33,11 @@ class MyApp extends StatelessWidget {
         Provider<RestaurantApi>(
           create: (_) => RestaurantApi(),
         ),
+        Provider<MealCacheDatasource>(
+          create: (_) => MealCacheDatasource(),
+        ),
         Provider<MealRepository>(
-          create: (context) => MealRepositoryImpl(context.read<MealApi>()),
+          create: (context) => MealRepositoryImpl(context.read<MealApi>(), context.read<MealCacheDatasource>()),
         ),
         Provider<RestaurantRepository>(
             create: (context) => RestaurantRepositoryImpl(context.read<RestaurantApi>())

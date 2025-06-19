@@ -60,19 +60,26 @@ class _MealDetailScreenState extends State<MealDetailScreen> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          RatingBar.builder(
-            initialRating: review.rating,
-            minRating: 1,
-            direction: Axis.horizontal,
-            allowHalfRating: true,
-            itemCount: 5,
-            itemSize: 16,
-            ignoreGestures: true,
-            itemBuilder: (context, _) => const Icon(
-              Icons.star,
-              color: AppColors.warning,
-            ),
-            onRatingUpdate: (rating) {},
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              RatingBar.builder(
+                initialRating: review.rating,
+                minRating: 1,
+                direction: Axis.horizontal,
+                allowHalfRating: true,
+                itemCount: 5,
+                itemSize: 16,
+                ignoreGestures: true,
+                itemBuilder: (context, _) => const Icon(
+                  Icons.star,
+                  color: AppColors.warning,
+                ),
+                onRatingUpdate: (rating) {},
+              ),
+              Text("대소고인${review.id}")
+            ],
           ),
           const SizedBox(width: 8),
           Expanded(
