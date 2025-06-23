@@ -8,6 +8,7 @@ import 'package:gugugu/domain/repositories/restaurant_repository.dart';
 import 'package:gugugu/presentation/features/hot_place/providers/hot_place_provider.dart';
 import 'package:gugugu/presentation/features/meal/providers/meal_detail_provider.dart';
 import 'package:gugugu/presentation/features/restaurant/providers/restaurant_provider.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
 import 'package:gugugu/presentation/features/meal/providers/meal_provider.dart';
 import 'package:gugugu/data/remote/datasources/meal_api.dart';
@@ -15,7 +16,8 @@ import 'package:gugugu/presentation/features/meal/screens/meal_screen.dart';
 import 'package:gugugu/presentation/features/restaurant/screens/restaurant_map_screen.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 
-void main() {
+void main() async {
+  await initializeDateFormatting('ko_KR');
   AuthRepository.initialize(appKey: "25d04b8d0417941faf58ab75220d93ff");
   runApp(const MyApp());
 }

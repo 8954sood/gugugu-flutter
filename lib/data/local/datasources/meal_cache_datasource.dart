@@ -14,7 +14,7 @@ class MealCacheDatasource {
     final dbPath = await getDatabasesPath();
     _db = await openDatabase(
       join(dbPath, 'meal_cache.db'),
-      version: 1,
+      version: 10,
       onCreate: (db, version) async {
         await db.execute('''
           CREATE TABLE $_tableName (
@@ -30,6 +30,11 @@ class MealCacheDatasource {
           )
         ''');
       },
+      onUpgrade: (db, version, ess) async {
+        await db.execute('''
+          DELETE FROM $_tableName
+        ''');
+      }
     );
   }
 

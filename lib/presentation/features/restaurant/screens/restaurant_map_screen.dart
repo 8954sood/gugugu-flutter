@@ -89,9 +89,9 @@ class _RestaurantMapScreenState extends State<RestaurantMapScreen> {
       context: context,
       builder: (context) => RestaurantAddDialog(
         userLocation: _nowPosition,
-        onSubmit: (name, description, address, lat, lng) {
+        onSubmit: (name, address, lat, lng) {
           context.read<RestaurantProvider>().createRestaurant(
-            Restaurant(id: Random.secure().nextInt(3000), name: name, address: address, latitude: lat, longitude: lng, description: description, averageRating: 0, reviewCount: 0, menu: [], comment: [], createdAt: DateTime.now(), updatedAt: DateTime.now(), )
+            Restaurant(id: Random.secure().nextInt(3000), name: name, address: address, latitude: lat, longitude: lng, description: "", averageRating: 0.0, reviewCount: 0, menu: [], comment: [], createdAt: DateTime.now(), updatedAt: DateTime.now(), )
           );
         },
       ),

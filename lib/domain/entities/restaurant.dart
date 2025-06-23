@@ -23,7 +23,7 @@ class Restaurant {
     required this.latitude,
     required this.longitude,
     required this.description,
-    this.imageUrl,
+    this.imageUrl = "https://picsum.photos/500",
     required this.averageRating,
     required this.reviewCount,
     required this.menu,

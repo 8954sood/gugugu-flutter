@@ -51,6 +51,7 @@ class _MealScreenState extends State<MealScreen> {
         child: Column(
           children: [
             TableCalendar(
+              locale: 'ko_KR',
               firstDay: _firstDay,
               lastDay: _lastDay,
               focusedDay: _focusedDay,

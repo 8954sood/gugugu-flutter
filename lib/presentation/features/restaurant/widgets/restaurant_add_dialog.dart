@@ -4,7 +4,7 @@ import 'package:gugugu/presentation/features/restaurant/screens/location_picker_
 
 class RestaurantAddDialog extends StatefulWidget {
   final LatLng userLocation;
-  final Function(String name, String description, String address, double lat, double lng) onSubmit;
+  final Function(String name, String address, double lat, double lng) onSubmit;
 
   const RestaurantAddDialog({
     super.key,
@@ -20,14 +20,12 @@ class _RestaurantAddDialogState extends State<RestaurantAddDialog> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _addressController = TextEditingController();
-  final _descriptionController = TextEditingController();
   LatLng? _selectedLocation;
 
   @override
   void dispose() {
     _nameController.dispose();
     _addressController.dispose();
-    _descriptionController.dispose();
     super.dispose();
   }
 
@@ -94,18 +92,18 @@ class _RestaurantAddDialogState extends State<RestaurantAddDialog> {
                     : '위도: ${_selectedLocation!.latitude.toStringAsFixed(6)}\n경도: ${_selectedLocation!.longitude.toStringAsFixed(6)}'),
               ),
               const SizedBox(height: 16),
-              TextFormField(
-                controller: _descriptionController,
-                decoration: const InputDecoration(
-                  labelText: '설명',
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return '맛집에 대한 설명을 입력해주세요';
-                  }
-                  return null;
-                },
-              ),
+              // TextFormField(
+              //   controller: _descriptionController,
+              //   decoration: const InputDecoration(
+              //     labelText: '설명',
+              //   ),
+              //   validator: (value) {
+              //     if (value == null || value.isEmpty) {
+              //       return '맛집에 대한 설명을 입력해주세요';
+              //     }
+              //     return null;
+              //   },
+              // ),
             ],
           ),
         ),
@@ -122,7 +120,7 @@ class _RestaurantAddDialogState extends State<RestaurantAddDialog> {
                   if (_formKey.currentState!.validate()) {
                     widget.onSubmit(
                       _nameController.text,
-                      _descriptionController.text,
+                      // _descriptionController.text,
                       _addressController.text,
                       _selectedLocation!.latitude,
                       _selectedLocation!.longitude,
